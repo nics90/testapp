@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubevm-deployment
+  namespace: kubevm-ns
+spec:
+  replicas: 1      
+  selector:
+    matchLabels:
+      app: kubevm
+  template:
+    metadata:
+      labels:
+        app: kubevm
+    spec:
+      serviceAccountName: kubevm-sa
+      containers:
+      - image: nics90/kubevm-operator:latest
+        name: kubevm
+        ports:
+          - name: admission
+            containerPort: 5001
+            protocol: TCP
+        env:
+          - name: MINIO_NAMESPACE
+            value: "minio-ns"
+          - name: MINIO_SERVICE_NAME
+            value: "minio-service"
+          - name: DNS
+            value: "minio-service.minio-ns.svc.cluster.local"
+          - name: MINIO_SERVICE_PORT
+            value: "9000"
+          - name: USERNAME
+            value: "root"
+          - name: PASSWORD
+            value: "tatacomm"
+          - name: MINIO_BUCKET_NAME
+            value: "images"
+          - name: OPERATOR_NAMESPACE
+            value: "kubevm-ns"
+          - name: OPERATOR_SERVICE_NAME
+            value: "kubevm-service"
+          - name: OPERATOR_PORT
+            value: "5001" 
+
+
